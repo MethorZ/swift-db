@@ -1,0 +1,11 @@
+/vendor/
+/composer.lock
+/.phpunit.cache/
+/.phpstan.cache/
+/.phpcs.cache
+/clover.xml
+/coverage/
+
+# Docker
+/docker/mysql/data/
+

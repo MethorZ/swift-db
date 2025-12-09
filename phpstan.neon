@@ -1,0 +1,24 @@
+parameters:
+    level: 9
+    paths:
+        - src
+        - tests
+        - examples
+    tmpDir: .phpstan.cache
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        # Allow unsafe usage of new static() in AbstractEntity (common pattern)
+        -
+            identifier: new.static
+        # PDOStatement::fetch can return false but we check with is_array
+        -
+            identifier: return.type
+            path: src/Query/QueryBuilder.php
+        -
+            identifier: return.type
+            path: src/Repository/AbstractRepository.php
+        # Comparison is intentional to ensure proper type
+        -
+            identifier: booleanAnd.alwaysFalse
+        -
+            identifier: identical.alwaysFalse

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # MySQL Database for integration tests
+  database:
+    image: mysql:8.0
+    container_name: methorz-database-test-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: methorz_test
+      MYSQL_USER: methorz
+      MYSQL_PASSWORD: methorz
+    ports:
+      - "33066:3306"
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+
+  # PHP container for running tests
+  php:
+    image: php:8.4-cli
+    container_name: methorz-database-test-php
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_DATABASE: methorz_test
+      DB_USERNAME: methorz
+      DB_PASSWORD: methorz
+
