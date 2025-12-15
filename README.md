@@ -1,5 +1,8 @@
 # MethorZ SwiftDb
 
+[![CI](https://github.com/methorz/swift-db/actions/workflows/ci.yml/badge.svg)](https://github.com/methorz/swift-db/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/methorz/swift-db/branch/main/graph/badge.svg)](https://codecov.io/gh/methorz/swift-db)
+
 High-performance MySQL database layer with bulk operations, built on PDO.
 
 ## Features

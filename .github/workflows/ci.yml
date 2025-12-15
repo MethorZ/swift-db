@@ -50,7 +50,16 @@ jobs:
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
       - name: Run PHPUnit
-        run: vendor/bin/phpunit --testsuite=unit --colors=always
+        run: vendor/bin/phpunit --testsuite=unit --colors=always --coverage-clover=coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   code-style:
     name: Code Style
