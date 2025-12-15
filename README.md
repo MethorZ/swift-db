@@ -2,6 +2,9 @@
 
 [![CI](https://github.com/methorz/swift-db/actions/workflows/ci.yml/badge.svg)](https://github.com/methorz/swift-db/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/methorz/swift-db/branch/main/graph/badge.svg)](https://codecov.io/gh/methorz/swift-db)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg?style=flat)](https://phpstan.org/)
+[![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 High-performance MySQL database layer with bulk operations, built on PDO.
 
