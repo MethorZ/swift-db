@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MethorZ\SwiftDb;
 
 use MethorZ\SwiftDb\Cache\MappingCache;
+use MethorZ\SwiftDb\Connection\Connection;
 use MethorZ\SwiftDb\Connection\ConnectionManager;
 use MethorZ\SwiftDb\Query\QueryLogger;
 use Psr\Container\ContainerInterface;
@@ -40,6 +41,10 @@ final class ConfigProvider
                     $dbConfig = $config['database'] ?? [];
 
                     return new ConnectionManager($dbConfig);
+                },
+                Connection::class => static function (ContainerInterface $container): Connection {
+                    $manager = $container->get(ConnectionManager::class);
+                    return $manager->getConnection();
                 },
                 QueryLogger::class => static function (ContainerInterface $container): QueryLogger {
                     $logger = $container->has(LoggerInterface::class)
