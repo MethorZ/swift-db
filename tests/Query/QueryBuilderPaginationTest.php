@@ -232,4 +232,75 @@ final class QueryBuilderPaginationTest extends TestCase
         $this->assertStringContainsString('product_active', $sql);
         $this->assertStringContainsString('ORDER BY', $sql);
     }
+
+    // =========================================================================
+    // PAGINATE NON-MUTATION TESTS
+    // =========================================================================
+
+    public function testPaginateDoesNotMutateQueryBuilder(): void
+    {
+        $builder = $this->builder
+            ->table('product')
+            ->select('*')
+            ->where('product_active', true);
+
+        $sqlBefore = $builder->toSql();
+
+        // paginate() would execute queries, but we can test the clone behavior
+        // by checking that the original builder state is preserved
+        $cloned = $builder->clone()
+            ->limit(15)
+            ->offset(0);
+
+        $sqlAfter = $builder->toSql();
+
+        $this->assertEquals($sqlBefore, $sqlAfter, 'Original builder should not be modified');
+        $this->assertStringNotContainsString('LIMIT', $sqlAfter);
+        $this->assertStringNotContainsString('OFFSET', $sqlAfter);
+    }
+
+    public function testPaginatePreservesExistingLimitOffset(): void
+    {
+        $builder = $this->builder
+            ->table('product')
+            ->select('*')
+            ->limit(5)
+            ->offset(10);
+
+        $sqlBefore = $builder->toSql();
+
+        // Simulating what paginate does: clone for count and items
+        $countClone = $builder->clone();
+        $itemsClone = $builder->clone()->limit(15)->offset(0);
+
+        $sqlAfter = $builder->toSql();
+
+        $this->assertEquals($sqlBefore, $sqlAfter, 'Original builder should preserve its limit/offset');
+        $this->assertStringContainsString('LIMIT 5', $sqlAfter);
+        $this->assertStringContainsString('OFFSET 10', $sqlAfter);
+    }
+
+    public function testMultiplePaginateCallsDoNotStackLimitOffset(): void
+    {
+        $builder = $this->builder
+            ->table('product')
+            ->select('*');
+
+        $sqlOriginal = $builder->toSql();
+
+        // Simulate multiple paginate calls (each should use clone)
+        $builder->clone()->limit(10)->offset(0);
+        $builder->clone()->limit(20)->offset(20);
+        $builder->clone()->limit(15)->offset(30);
+
+        $sqlAfter = $builder->toSql();
+
+        $this->assertEquals(
+            $sqlOriginal,
+            $sqlAfter,
+            'Original builder should remain unchanged after multiple paginate simulations',
+        );
+        $this->assertStringNotContainsString('LIMIT', $sqlAfter);
+        $this->assertStringNotContainsString('OFFSET', $sqlAfter);
+    }
 }

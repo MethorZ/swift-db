@@ -11,9 +11,17 @@ use IteratorAggregate;
 /**
  * Paginated result set with metadata
  *
- * Implements SPL interfaces for convenient iteration and counting:
- * - count($result) returns total record count
- * - foreach ($result as $row) iterates over items
+ * Implements SPL interfaces for convenient iteration and counting.
+ *
+ * IMPORTANT: count($result) returns the TOTAL record count across all pages,
+ * while foreach iterates only over items on the current page. Use itemCount()
+ * if you need the number of items on the current page.
+ *
+ * Example:
+ *   $result = $repo->paginate(10, 1);  // 100 total records
+ *   count($result);         // 100 (total across all pages)
+ *   $result->itemCount();   // 10 (items on current page)
+ *   iterator_count($result); // 10 (same as itemCount)
  *
  * @implements IteratorAggregate<int, array<string, mixed>>
  */
@@ -31,7 +39,10 @@ final readonly class PaginatedResult implements Countable, IteratorAggregate
     }
 
     /**
-     * Get the total number of records (Countable interface)
+     * Returns the TOTAL record count across all pages (Countable interface)
+     *
+     * Note: This returns the total count, not the current page item count.
+     * Use itemCount() for the number of items on the current page.
      *
      * @return int<0, max>
      */
@@ -41,8 +52,17 @@ final readonly class PaginatedResult implements Countable, IteratorAggregate
     }
 
     /**
-     * Get an iterator for the items (IteratorAggregate interface)
+     * Returns the number of items on the current page
      *
+     * @return int<0, max>
+     */
+    public function itemCount(): int
+    {
+        /** @var int<0, max> */
+        return count($this->items);
+    }
+
+    /**
      * @return ArrayIterator<int, array<string, mixed>>
      */
     public function getIterator(): ArrayIterator
@@ -119,12 +139,7 @@ final readonly class PaginatedResult implements Countable, IteratorAggregate
             return null;
         }
 
-        $firstItem = $this->firstItem();
-
-        if ($firstItem === null) {
-            return null;
-        }
-
-        return $firstItem + count($this->items) - 1;
+        // firstItem() is guaranteed non-null here since isEmpty() returned false
+        return $this->firstItem() + count($this->items) - 1;
     }
 }

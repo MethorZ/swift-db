@@ -861,11 +861,10 @@ final class QueryBuilder
         $page = max(1, $page);
         $perPage = max(1, $perPage);
 
-        // Clone to get count without affecting main query
         $total = $this->clone()->count();
 
-        // Get items for current page
-        $items = $this->limit($perPage)
+        $items = $this->clone()
+            ->limit($perPage)
             ->offset(($page - 1) * $perPage)
             ->get();
 

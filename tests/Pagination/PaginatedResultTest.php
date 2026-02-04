@@ -64,6 +64,55 @@ final class PaginatedResultTest extends TestCase
         $this->assertEquals(250, $result->count());
     }
 
+    public function testCountReturnsTotalNotItemCount(): void
+    {
+        $items = array_map(fn ($i) => ['id' => $i], range(1, 10));
+        $result = new PaginatedResult($items, 100, 10, 1);
+
+        // count() returns total (100), not item count (10)
+        $this->assertEquals(100, count($result));
+        $this->assertNotEquals(10, count($result));
+    }
+
+    public function testItemCountReturnsCurrentPageCount(): void
+    {
+        $items = array_map(fn ($i) => ['id' => $i], range(1, 10));
+        $result = new PaginatedResult($items, 100, 10, 1);
+
+        $this->assertEquals(10, $result->itemCount());
+    }
+
+    public function testItemCountWithPartialPage(): void
+    {
+        $items = [['id' => 96], ['id' => 97], ['id' => 98]];
+        $result = new PaginatedResult($items, 98, 10, 10);
+
+        // Last page with only 3 items
+        $this->assertEquals(3, $result->itemCount());
+    }
+
+    public function testItemCountWithEmptyResult(): void
+    {
+        $result = new PaginatedResult([], 0, 15, 1);
+
+        $this->assertEquals(0, $result->itemCount());
+    }
+
+    public function testCountVsItemCountSemantics(): void
+    {
+        $items = array_map(fn ($i) => ['id' => $i], range(1, 15));
+        $result = new PaginatedResult($items, 500, 15, 1);
+
+        // count() = total records across all pages
+        $this->assertEquals(500, count($result));
+
+        // itemCount() = items on current page
+        $this->assertEquals(15, $result->itemCount());
+
+        // iterator_count() = same as itemCount()
+        $this->assertEquals(15, iterator_count($result));
+    }
+
     public function testGetIteratorReturnsArrayIterator(): void
     {
         $items = [['id' => 1], ['id' => 2]];
