@@ -14,6 +14,7 @@ use MethorZ\SwiftDb\Exception\DuplicateEntryException;
 use MethorZ\SwiftDb\Exception\EntityException;
 use MethorZ\SwiftDb\Exception\OptimisticLockException;
 use MethorZ\SwiftDb\Exception\QueryException;
+use MethorZ\SwiftDb\Pagination\PaginatedResult;
 use MethorZ\SwiftDb\Query\QueryBuilder;
 use MethorZ\SwiftDb\Query\QueryLogger;
 use MethorZ\SwiftDb\Trait\TimestampsTrait;
@@ -298,6 +299,14 @@ abstract class AbstractRepository implements RepositoryInterface
     {
         return (new QueryBuilder($this->connection, $this->logger))
             ->table($this->getTableName());
+    }
+
+    /**
+     * Paginate all entities
+     */
+    public function paginate(int $perPage = 15, int $page = 1): PaginatedResult
+    {
+        return $this->query()->paginate($perPage, $page);
     }
 
     /**

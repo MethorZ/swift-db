@@ -6,6 +6,7 @@ namespace MethorZ\SwiftDb\Query;
 
 use Closure;
 use MethorZ\SwiftDb\Connection\Connection;
+use MethorZ\SwiftDb\Pagination\PaginatedResult;
 use PDO;
 use PDOStatement;
 
@@ -848,6 +849,27 @@ final class QueryBuilder
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $result !== false ? $result : [];
+    }
+
+    /**
+     * Paginate the results
+     *
+     * Executes two queries: one for the total count and one for the items.
+     */
+    public function paginate(int $perPage = 15, int $page = 1): PaginatedResult
+    {
+        $page = max(1, $page);
+        $perPage = max(1, $perPage);
+
+        // Clone to get count without affecting main query
+        $total = $this->clone()->count();
+
+        // Get items for current page
+        $items = $this->limit($perPage)
+            ->offset(($page - 1) * $perPage)
+            ->get();
+
+        return new PaginatedResult($items, $total, $perPage, $page);
     }
 
     /**

@@ -176,6 +176,41 @@ $products = $repository->query()
     ->get();
 ```
 
+### Pagination
+
+```php
+// Simple pagination
+$result = $repository->paginate(perPage: 15, page: 1);
+
+// Access items
+foreach ($result as $row) {
+    echo $row['product_name'];
+}
+
+// Or use items property
+$items = $result->items;
+
+// Pagination metadata
+$result->total;             // Total records
+$result->perPage;           // Items per page
+$result->currentPage;       // Current page number
+$result->lastPage();        // Last page number
+$result->hasMorePages();    // Has next page?
+$result->hasPreviousPage(); // Has previous page?
+
+// SPL interfaces
+count($result);             // Returns total (Countable)
+foreach ($result as $row) { // Iterates items (IteratorAggregate)
+    // ...
+}
+
+// With query conditions
+$result = $repository->query()
+    ->where('active', true)
+    ->orderBy('created_at', 'DESC')
+    ->paginate(20, 2);
+```
+
 ### Bulk Operations
 
 ```php
@@ -471,6 +506,7 @@ Fluent query builder for MySQL with Laravel-style syntax.
 | `insert(array $values): bool` | INSERT query |
 | `toSql(): string` | Get SQL string |
 | `getBindings(): array` | Get bindings |
+| `paginate(int $perPage, int $page): PaginatedResult` | Paginate results |
 
 #### Query Builder Examples
 
@@ -614,6 +650,24 @@ $rows = $this->query()
     ->orWhereRaw('product_price * ? < product_cost', [0.8])
     ->get();
 ```
+
+### PaginatedResult
+
+Paginated result set implementing `Countable` and `IteratorAggregate`.
+
+| Property/Method | Description |
+|-----------------|-------------|
+| `$items` | Array of result rows |
+| `$total` | Total record count |
+| `$perPage` | Items per page |
+| `$currentPage` | Current page number |
+| `lastPage(): int` | Calculate last page number |
+| `hasMorePages(): bool` | Check if more pages exist |
+| `hasPreviousPage(): bool` | Check if previous page exists |
+| `isEmpty(): bool` | Check if result is empty |
+| `isNotEmpty(): bool` | Check if result has items |
+| `firstItem(): ?int` | Get first item index (1-based) |
+| `lastItem(): ?int` | Get last item index (1-based) |
 
 ### BulkInsert
 

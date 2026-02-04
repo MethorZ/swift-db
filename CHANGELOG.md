@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Pagination support** with `paginate()` method on QueryBuilder and AbstractRepository
+  - Returns `PaginatedResult` value object implementing `Countable` and `IteratorAggregate`
+  - Supports all query conditions (where, orderBy, join, etc.)
+  - Helper methods: `lastPage()`, `hasMorePages()`, `hasPreviousPage()`, `isEmpty()`, `firstItem()`, `lastItem()`
 - Complete set of `or*` convenience methods for QueryBuilder:
   - `orWhereLike()` - OR WHERE LIKE for cleaner search queries
   - `orWhereBetween()` and `orWhereNotBetween()` - OR BETWEEN/NOT BETWEEN

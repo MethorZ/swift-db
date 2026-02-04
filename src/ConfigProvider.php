@@ -43,7 +43,9 @@ final class ConfigProvider
                     return new ConnectionManager($dbConfig);
                 },
                 Connection::class => static function (ContainerInterface $container): Connection {
+                    /** @var ConnectionManager $manager */
                     $manager = $container->get(ConnectionManager::class);
+
                     return $manager->getConnection();
                 },
                 QueryLogger::class => static function (ContainerInterface $container): QueryLogger {
