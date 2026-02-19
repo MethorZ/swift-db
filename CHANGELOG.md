@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Connection convenience methods** with automatic reconnection support:
+  - `prepare(string $sql): PDOStatement` - Prepare statement with reconnect
+  - `query(string $sql): PDOStatement` - Execute raw query with reconnect
+  - `execute(string $sql, array $params): int` - Execute and return affected rows
+  - `fetchOne(string $sql, array $params): ?array` - Fetch single row or null
+  - `fetchAll(string $sql, array $params): array` - Fetch all matching rows
 - **Pagination support** with `paginate()` method on QueryBuilder and AbstractRepository
   - Returns `PaginatedResult` value object implementing `Countable` and `IteratorAggregate`
   - Supports all query conditions (where, orderBy, join, etc.)
@@ -27,7 +33,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: Performance tip about using convenience methods for cleaner and more efficient SQL
 
 ### Changed
+- `BulkInsert::execute()` now uses `Connection::prepare()` instead of `getPdo()->prepare()` for reconnect support
 - Example `ProductRepository::findAdvanced()` now uses `orWhereLike()` for cleaner, more idiomatic syntax
+
+### Removed
+- Unused `$maxQuerySize` property from `BulkInsert`
+
+### Fixed
+- **README**: `BulkInsert` API table now correctly documents `add(array|EntityInterface)` instead of separate `add()` + `addRow()` methods
+- **README**: Removed non-existent `setBatchSize()` from BulkInsert API table (batch size is constructor parameter)
+- **README**: Added missing `addMany()` and `getPendingCount()` to BulkInsert API table
+- **README**: Added missing `updateColumn()` and `incrementOnDuplicate()` to BulkUpsert API table
+- **README**: Added missing `findAll()` and `paginate()` to AbstractRepository API table
+- **README**: Added Connection API reference section
 
 ## [1.1.0] - 2024-12-08
 

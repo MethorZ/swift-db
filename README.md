@@ -394,14 +394,16 @@ Base class for all repositories.
 | `find(mixed $id): ?T` | Find by primary key |
 | `findOrFail(mixed $id): T` | Find or throw exception |
 | `findMany(array $ids): array` | Find multiple by IDs |
+| `findAll(): array` | Find all records |
 | `save(EntityInterface $entity): void` | Insert or update entity |
 | `delete(EntityInterface $entity): bool` | Delete entity |
 | `deleteById(mixed $id): bool` | Delete by primary key |
 | `create(): T` | Create new entity instance |
 | `count(): int` | Count all records |
 | `query(): QueryBuilder` | Create query builder |
-| `bulkInsert(): BulkInsert` | Create bulk insert operation |
-| `bulkUpsert(): BulkUpsert` | Create bulk upsert operation |
+| `paginate(int $perPage, int $page): PaginatedResult` | Paginate all records |
+| `bulkInsert(int $batchSize): BulkInsert` | Create bulk insert operation |
+| `bulkUpsert(int $batchSize): BulkUpsert` | Create bulk upsert operation |
 | `beginTransaction(): void` | Start transaction |
 | `commit(): void` | Commit transaction |
 | `rollback(): void` | Rollback transaction |
@@ -669,27 +671,54 @@ Paginated result set implementing `Countable` and `IteratorAggregate`.
 | `firstItem(): ?int` | Get first item index (1-based) |
 | `lastItem(): ?int` | Get last item index (1-based) |
 
+### Connection
+
+Database connection wrapper with lazy initialization and automatic reconnection.
+
+| Method | Description |
+|--------|-------------|
+| `getPdo(): PDO` | Get underlying PDO (lazy-init) |
+| `prepare(string $sql): PDOStatement` | Prepare statement with reconnect |
+| `query(string $sql): PDOStatement` | Execute raw query with reconnect |
+| `execute(string $sql, array $params): int` | Execute and return affected rows |
+| `fetchOne(string $sql, array $params): ?array` | Fetch single row or null |
+| `fetchAll(string $sql, array $params): array` | Fetch all matching rows |
+| `beginTransaction(): bool` | Start transaction |
+| `commit(): bool` | Commit transaction |
+| `rollback(): bool` | Rollback transaction |
+| `inTransaction(): bool` | Check if in transaction |
+| `lastInsertId(?string $name): string\|false` | Get last insert ID |
+| `executeWithReconnect(callable $op): mixed` | Run operation with auto-reconnect |
+| `isConnected(): bool` | Check if connected |
+| `connect(): void` | Establish connection |
+| `disconnect(): void` | Close connection |
+| `reconnect(): void` | Disconnect and reconnect |
+
 ### BulkInsert
 
 High-performance multi-row INSERT.
 
 | Method | Description |
 |--------|-------------|
-| `add(EntityInterface $entity): self` | Add entity to batch |
-| `addRow(array $row): self` | Add raw row to batch |
+| `add(array\|EntityInterface $row): self` | Add row or entity to batch |
+| `addMany(array $rows): self` | Add multiple rows |
 | `flush(): int` | Execute and return affected rows |
-| `ignore(): self` | Use INSERT IGNORE |
-| `setBatchSize(int $size): self` | Set batch size (default: 1000) |
+| `ignore(bool $ignore = true): self` | Use INSERT IGNORE |
 | `getTotalAffected(): int` | Get total rows affected |
+| `getPendingCount(): int` | Get pending (unflushed) row count |
+
+Batch size is set via the constructor (default: 1000). Auto-flushes when batch is full.
 
 ### BulkUpsert
 
-INSERT ... ON DUPLICATE KEY UPDATE.
+INSERT ... ON DUPLICATE KEY UPDATE (extends BulkInsert).
 
 | Method | Description |
 |--------|-------------|
 | `onDuplicateKeyUpdate(array $columns): self` | Set columns to update |
-| `touchUpdatedOnDuplicate(string $column): self` | Update timestamp on duplicate |
+| `updateColumn(string $col, string $expr): self` | Custom update expression |
+| `incrementOnDuplicate(string $column): self` | Increment column on duplicate |
+| `touchUpdatedOnDuplicate(string $col): self` | Update timestamp on duplicate |
 | *(inherits all BulkInsert methods)* | |
 
 ### IdentityMap (Optional)

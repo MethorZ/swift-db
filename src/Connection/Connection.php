@@ -7,6 +7,7 @@ namespace MethorZ\SwiftDb\Connection;
 use MethorZ\SwiftDb\Exception\ConnectionException;
 use PDO;
 use PDOException;
+use PDOStatement;
 
 /**
  * Single database connection wrapper with lazy initialization and reconnection support
@@ -202,5 +203,112 @@ final class Connection
     public function lastInsertId(?string $name = null): string|false
     {
         return $this->getPdo()->lastInsertId($name);
+    }
+
+    /**
+     * Prepare a SQL statement with automatic reconnection on connection loss
+     */
+    public function prepare(string $sql): PDOStatement
+    {
+        return $this->executeWithReconnect(function () use ($sql): PDOStatement {
+            $stmt = $this->getPdo()->prepare($sql);
+
+            if ($stmt === false) {
+                throw new PDOException('Failed to prepare statement: ' . $sql);
+            }
+
+            return $stmt;
+        });
+    }
+
+    /**
+     * Execute a raw SQL query and return the statement (for SELECT without parameters)
+     *
+     * For parameterized queries, use prepare() + execute() or the convenience
+     * methods execute(), fetchOne(), fetchAll() instead.
+     */
+    public function query(string $sql): PDOStatement
+    {
+        return $this->executeWithReconnect(function () use ($sql): PDOStatement {
+            $stmt = $this->getPdo()->query($sql);
+
+            if ($stmt === false) {
+                throw new PDOException('Failed to execute query: ' . $sql);
+            }
+
+            return $stmt;
+        });
+    }
+
+    /**
+     * Execute a parameterized statement and return the number of affected rows
+     *
+     * Convenience method for INSERT, UPDATE, DELETE operations.
+     *
+     * @param array<int|string, mixed> $params
+     */
+    public function execute(string $sql, array $params = []): int
+    {
+        return $this->executeWithReconnect(function () use ($sql, $params): int {
+            $stmt = $this->getPdo()->prepare($sql);
+
+            if ($stmt === false) {
+                throw new PDOException('Failed to prepare statement: ' . $sql);
+            }
+
+            $stmt->execute($params);
+
+            return $stmt->rowCount();
+        });
+    }
+
+    /**
+     * Execute a parameterized SELECT and return the first row or null
+     *
+     * @param array<int|string, mixed> $params
+     * @return array<string, mixed>|null
+     */
+    public function fetchOne(string $sql, array $params = []): ?array
+    {
+        return $this->executeWithReconnect(function () use ($sql, $params): ?array {
+            $stmt = $this->getPdo()->prepare($sql);
+
+            if ($stmt === false) {
+                throw new PDOException('Failed to prepare statement: ' . $sql);
+            }
+
+            $stmt->execute($params);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($result === false) {
+                return null;
+            }
+
+            /** @var array<string, mixed> $result */
+            return $result;
+        });
+    }
+
+    /**
+     * Execute a parameterized SELECT and return all matching rows
+     *
+     * @param array<int|string, mixed> $params
+     * @return list<array<string, mixed>>
+     */
+    public function fetchAll(string $sql, array $params = []): array
+    {
+        return $this->executeWithReconnect(function () use ($sql, $params): array {
+            $stmt = $this->getPdo()->prepare($sql);
+
+            if ($stmt === false) {
+                throw new PDOException('Failed to prepare statement: ' . $sql);
+            }
+
+            $stmt->execute($params);
+
+            /** @var list<array<string, mixed>> */
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        });
     }
 }

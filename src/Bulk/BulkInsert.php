@@ -40,11 +40,6 @@ class BulkInsert
 
     protected bool $ignoreErrors = false;
 
-    /**
-     * Maximum query size in bytes (8MB)
-     */
-    protected int $maxQuerySize = 8388608;
-
     public function __construct(
         protected readonly Connection $connection,
         protected readonly string $table,
@@ -172,7 +167,7 @@ class BulkInsert
         $startTime = microtime(true);
 
         try {
-            $stmt = $this->connection->getPdo()->prepare($sql);
+            $stmt = $this->connection->prepare($sql);
             $stmt->execute($params);
             $affected = $stmt->rowCount();
         } catch (PDOException $e) {
