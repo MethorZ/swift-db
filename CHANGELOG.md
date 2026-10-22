@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-10-22
+
+### Changed
+- PHP requirement raised to `~8.4.27 || ~8.5.12` (releases patched for php2shell: CVE-2026-109618, CVE-2026-109619). PHP 8.3 is no longer supported.
+- Updated dependencies: ramsey/uuid ^4.9; development: phpunit/phpunit ^13.4, phpstan/phpstan ^2.3, slevomat/coding-standard ^8.31, squizlabs/php_codesniffer ^4.0.1.
+- `ConnectionConfig` default options use `Pdo\Mysql::ATTR_FOUND_ROWS` instead of `PDO::MYSQL_ATTR_FOUND_ROWS`, which PHP 8.5 deprecates (same value, no behaviour change). SECURITY.md examples use `Pdo\Mysql::ATTR_SSL_*`.
+- Integration-test services use `mysql:8.4` (LTS) and `php:8.5.12-cli-trixie`; removed the `--default-authentication-plugin` flag that MySQL 8.4 no longer accepts.
+- `AbstractEntity::getDirtyFields()` compares extracted values strictly instead of by string cast, so changes such as `null` to `''` or `0` to `null` are now detected as dirty.
+
+## [1.2.0] - 2026-02-19
+
 ### Added
 - **Connection convenience methods** with automatic reconnection support:
   - `prepare(string $sql): PDOStatement` - Prepare statement with reconnect

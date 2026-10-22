@@ -333,7 +333,7 @@ class ProductRepository extends AbstractRepository
             ->touchUpdatedOnDuplicate('product_updated');
 
         foreach ($products as $product) {
-            if (isset($stockUpdates[$product->id])) {
+            if ($product->id !== null && isset($stockUpdates[$product->id])) {
                 $product->stock = $stockUpdates[$product->id];
                 $product->touchUpdated();
                 $bulk->add($product);

@@ -16,7 +16,7 @@ final readonly class ConnectionConfig
         \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
         \PDO::ATTR_EMULATE_PREPARES => false,
-        \PDO::MYSQL_ATTR_FOUND_ROWS => true,
+        \Pdo\Mysql::ATTR_FOUND_ROWS => true,
     ];
 
     /**

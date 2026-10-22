@@ -46,10 +46,9 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[ConnectionManager::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')
-            ->with('config')
-            ->willReturn([
+            ->willReturnMap([['config', [
                 'database' => [
                     'connections' => [
                         'default' => [
@@ -59,7 +58,7 @@ final class ConfigProviderTest extends TestCase
                         ],
                     ],
                 ],
-            ]);
+            ]]]);
 
         $result = $factory($container);
 
@@ -75,10 +74,9 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[ConnectionManager::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')
-            ->with('config')
-            ->willReturn([]);
+            ->willReturnMap([['config', []]]);
 
         $result = $factory($container);
 
@@ -95,13 +93,11 @@ final class ConfigProviderTest extends TestCase
         $factory = $factories[QueryLogger::class];
 
         $logger = new NullLogger();
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('has')
-            ->with(LoggerInterface::class)
-            ->willReturn(true);
+            ->willReturnMap([[LoggerInterface::class, true]]);
         $container->method('get')
-            ->with(LoggerInterface::class)
-            ->willReturn($logger);
+            ->willReturnMap([[LoggerInterface::class, $logger]]);
 
         $result = $factory($container);
 
@@ -117,10 +113,9 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[QueryLogger::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('has')
-            ->with(LoggerInterface::class)
-            ->willReturn(false);
+            ->willReturnMap([[LoggerInterface::class, false]]);
 
         $result = $factory($container);
 
@@ -136,13 +131,11 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[QueryLogger::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('has')
-            ->with(LoggerInterface::class)
-            ->willReturn(true);
+            ->willReturnMap([[LoggerInterface::class, true]]);
         $container->method('get')
-            ->with(LoggerInterface::class)
-            ->willReturn('not a logger');
+            ->willReturnMap([[LoggerInterface::class, 'not a logger']]);
 
         $result = $factory($container);
 
@@ -158,14 +151,13 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[MappingCache::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')
-            ->with('config')
-            ->willReturn([
+            ->willReturnMap([['config', [
                 'database' => [
                     'cache_dir' => '/tmp/cache',
                 ],
-            ]);
+            ]]]);
 
         $result = $factory($container);
 
@@ -181,10 +173,9 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[MappingCache::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')
-            ->with('config')
-            ->willReturn([]);
+            ->willReturnMap([['config', []]]);
 
         $result = $factory($container);
 
@@ -200,14 +191,13 @@ final class ConfigProviderTest extends TestCase
         $factories = $dependencies['factories'];
         $factory = $factories[MappingCache::class];
 
-        $container = $this->createMock(ContainerInterface::class);
+        $container = $this->createStub(ContainerInterface::class);
         $container->method('get')
-            ->with('config')
-            ->willReturn([
+            ->willReturnMap([['config', [
                 'database' => [
                     'cache_dir' => 12345, // Not a string
                 ],
-            ]);
+            ]]]);
 
         $result = $factory($container);
 

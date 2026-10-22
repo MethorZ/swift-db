@@ -100,9 +100,15 @@ abstract class AbstractEntity implements EntityInterface
      */
     public function getDirtyFields(): array
     {
-        $current = $this->extract();
+        $dirty = [];
 
-        return array_diff_assoc($current, $this->originalData);
+        foreach ($this->extract() as $column => $value) {
+            if (!array_key_exists($column, $this->originalData) || $this->originalData[$column] !== $value) {
+                $dirty[$column] = $value;
+            }
+        }
+
+        return $dirty;
     }
 
     /**

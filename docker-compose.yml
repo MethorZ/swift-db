@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # MySQL Database for integration tests
   database:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: methorz-database-test-db
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -20,13 +20,12 @@ services:
       timeout: 5s
       retries: 10
     command: >
-      --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
 
   # PHP container for running tests
   php:
-    image: php:8.4-cli
+    image: php:8.5.12-cli-trixie
     container_name: methorz-database-test-php
     working_dir: /app
     volumes:

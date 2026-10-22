@@ -13,9 +13,6 @@ parameters:
         # PDOStatement::fetch can return false but we check with is_array
         -
             identifier: return.type
-            path: src/Query/QueryBuilder.php
-        -
-            identifier: return.type
             path: src/Repository/AbstractRepository.php
         # Comparison is intentional to ensure proper type
         -

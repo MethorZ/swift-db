@@ -207,6 +207,8 @@ final class ConnectionManagerIntegrationTest extends IntegrationTestCase
 
     public function testReconnectAll(): void
     {
+        $this->seedCategories();
+
         $manager = $this->createConnectionManager();
 
         // Force connections to be established

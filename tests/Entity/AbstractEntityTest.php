@@ -77,6 +77,22 @@ final class AbstractEntityTest extends TestCase
         $this->assertFalse($entity->isDirty());
     }
 
+    public function testDirtyTrackingDetectsNullToEmptyString(): void
+    {
+        $entity = new TestProduct();
+        $entity->hydrate([
+            'product_id' => 1,
+            'product_name' => 'Original',
+            'product_price' => 10.0,
+        ]);
+        $this->assertNull($entity->uuid);
+
+        $entity->uuid = '';
+
+        $this->assertTrue($entity->isDirty());
+        $this->assertContains('', $entity->getDirtyFields());
+    }
+
     public function testUuidTrait(): void
     {
         $entity = new TestProduct();

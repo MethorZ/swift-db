@@ -44,12 +44,12 @@ final class BulkOperationsIntegrationTest extends IntegrationTestCase
 
     public function testBulkInsertWithBatching(): void
     {
-        // Create bulk insert with small batch size
-        $bulk = $this->repository->bulkInsert();
+        // Use reflection to set a smaller batch size on the repository for testing
+        // (BulkInsert::$batchSize is readonly and set through its constructor)
+        $reflection = new \ReflectionProperty($this->repository, 'bulkBatchSize');
+        $reflection->setValue($this->repository, 5);
 
-        // Use reflection to set a smaller batch size for testing
-        $reflection = new \ReflectionProperty($bulk, 'batchSize');
-        $reflection->setValue($bulk, 5);
+        $bulk = $this->repository->bulkInsert();
 
         for ($i = 1; $i <= 12; $i++) {
             $product = $this->repository->create();

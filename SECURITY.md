@@ -79,8 +79,8 @@ $repository->query()
 $config = [
     'dsn' => 'mysql:host=remote;dbname=app;charset=utf8mb4',
     'options' => [
-        PDO::MYSQL_ATTR_SSL_CA => '/path/to/ca-cert.pem',
-        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => true,
+        Pdo\Mysql::ATTR_SSL_CA => '/path/to/ca-cert.pem',
+        Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT => true,
     ],
 ];
 ```

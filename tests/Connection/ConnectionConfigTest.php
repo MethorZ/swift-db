@@ -74,6 +74,9 @@ final class ConnectionConfigTest extends TestCase
 
         $this->assertArrayHasKey(\PDO::ATTR_EMULATE_PREPARES, $options);
         $this->assertFalse($options[\PDO::ATTR_EMULATE_PREPARES]);
+
+        $this->assertArrayHasKey(\Pdo\Mysql::ATTR_FOUND_ROWS, $options);
+        $this->assertTrue($options[\Pdo\Mysql::ATTR_FOUND_ROWS]);
     }
 
     public function testGetPdoOptionsMergesCustomOptions(): void

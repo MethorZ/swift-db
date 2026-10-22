@@ -3,7 +3,7 @@
 [![CI](https://github.com/methorz/swift-db/actions/workflows/ci.yml/badge.svg)](https://github.com/methorz/swift-db/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/methorz/swift-db/branch/main/graph/badge.svg)](https://codecov.io/gh/methorz/swift-db)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg?style=flat)](https://phpstan.org/)
-[![PHP Version](https://img.shields.io/badge/php-%5E8.3-blue)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/php-~8.4.27%20%7C%7C%20~8.5.12-blue)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 High-performance MySQL database layer with bulk operations, built on PDO.
@@ -852,7 +852,7 @@ $cache->clear();
 
 ## Requirements
 
-- PHP 8.3 or 8.4
+- PHP 8.4 (>= 8.4.27) or PHP 8.5 (>= 8.5.12)
 - PDO with MySQL driver
 - MySQL 8.0+
 - Docker (for integration tests)
