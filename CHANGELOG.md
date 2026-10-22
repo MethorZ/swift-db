@@ -25,27 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `execute(string $sql, array $params): int` - Execute and return affected rows
   - `fetchOne(string $sql, array $params): ?array` - Fetch single row or null
   - `fetchAll(string $sql, array $params): array` - Fetch all matching rows
-- **Pagination support** with `paginate()` method on QueryBuilder and AbstractRepository
-  - Returns `PaginatedResult` value object implementing `Countable` and `IteratorAggregate`
-  - Supports all query conditions (where, orderBy, join, etc.)
-  - Helper methods: `lastPage()`, `hasMorePages()`, `hasPreviousPage()`, `isEmpty()`, `firstItem()`, `lastItem()`
-- Complete set of `or*` convenience methods for QueryBuilder:
-  - `orWhereLike()` - OR WHERE LIKE for cleaner search queries
-  - `orWhereBetween()` and `orWhereNotBetween()` - OR BETWEEN/NOT BETWEEN
-  - `orWhereIn()` and `orWhereNotIn()` - OR IN/NOT IN (with subquery support)
-  - `orWhereExists()` and `orWhereNotExists()` - OR EXISTS/NOT EXISTS
-  - `orWhereRaw()` - OR raw WHERE clause
-- **Documentation**: Comprehensive practical examples for all OR convenience methods in README
-  - Multi-field search with `orWhereLike()`
-  - Range queries with `orWhereBetween()`/`orWhereNotBetween()`
-  - Set operations with `orWhereIn()`/`orWhereNotIn()` (including subquery examples)
-  - Existence checks with `orWhereExists()`/`orWhereNotExists()`
-  - Complex business logic with `orWhereRaw()`
-- **Documentation**: Performance tip about using convenience methods for cleaner and more efficient SQL
 
 ### Changed
 - `BulkInsert::execute()` now uses `Connection::prepare()` instead of `getPdo()->prepare()` for reconnect support
-- Example `ProductRepository::findAdvanced()` now uses `orWhereLike()` for cleaner, more idiomatic syntax
 
 ### Removed
 - Unused `$maxQuerySize` property from `BulkInsert`
@@ -58,39 +40,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **README**: Added missing `findAll()` and `paginate()` to AbstractRepository API table
 - **README**: Added Connection API reference section
 
-## [1.1.0] - 2024-12-08
+## [1.1.1] - 2026-02-04
 
 ### Added
+- `PaginatedResult::itemCount()` for the number of items on the current page, with documentation of `count()` versus `itemCount()`
 
-- **Laravel-style QueryBuilder API**
-  - Implicit equality operator: `->where('column', $value)`
-  - Array syntax: `->where(['col1' => $val1, 'col2' => $val2])`
-  - Nested conditions with closures: `->where(function ($q) { ... })`
-  - `whereColumn()` for column-to-column comparisons
-  - `whereExists()` and `whereNotExists()` for subqueries
-  - `whereIn()` with subquery closure support
-  - `when()` and `unless()` for conditional building
-  - `tap()` for side effects without modifying the builder
-  - `orderByAsc()` and `orderByDesc()` convenience methods
-  - `take()` and `skip()` aliases for `limit()` and `offset()`
-  - `union()` and `unionAll()` for combining queries
-  - `doesntExist()` as inverse of `exists()`
-  - `clone()` and `newQuery()` for query manipulation
-- **JoinClause** helper class for complex join conditions
-  - `on()`, `orOn()` for column comparisons
-  - `where()`, `orWhere()` for value conditions in joins
-  - `whereNull()`, `whereNotNull()` for NULL checks in joins
-- **Comprehensive test coverage**
-  - 246 unit tests covering all features
-  - Integration tests for master/slave routing
-  - Trait tests for Timestamps and UUID
+### Fixed
+- `paginate()` no longer mutates the QueryBuilder it is called on; the items query runs on a clone
 
-### Changed
+## [1.1.0] - 2026-02-04
 
-- QueryBuilder now uses Laravel-style API as primary interface
-- Improved type safety throughout codebase
+### Added
+- **Pagination support** with `paginate()` method on QueryBuilder and AbstractRepository
+  - Returns `PaginatedResult` value object implementing `Countable` and `IteratorAggregate`
+  - Supports all query conditions (where, orderBy, join, etc.)
+  - Helper methods: `lastPage()`, `hasMorePages()`, `hasPreviousPage()`, `isEmpty()`, `firstItem()`, `lastItem()`
 
-## [1.0.0] - 2024-12-08
+## [1.0.1] - 2026-01-02
+
+### Added
+- `ConfigProvider` registers a factory for `Connection` (the default connection of the `ConnectionManager`), so repositories can inject it directly, including through `ReflectionBasedAbstractFactory`
+
+## [1.0.0] - 2025-12-15
+
+First public release. It contains the internal development versions 1.0.0 and 1.1.0 (both 2024-12-08) and the `or*` convenience methods.
 
 ### Added
 
@@ -113,10 +86,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - UuidTrait for UUID generation
   - VersionTrait for optimistic locking
 - **Mapping Cache** for reflection caching in production
+- **Laravel-style QueryBuilder API**
+  - Implicit equality operator: `->where('column', $value)`
+  - Array syntax: `->where(['col1' => $val1, 'col2' => $val2])`
+  - Nested conditions with closures: `->where(function ($q) { ... })`
+  - `whereColumn()` for column-to-column comparisons
+  - `whereExists()` and `whereNotExists()` for subqueries
+  - `whereIn()` with subquery closure support
+  - `when()` and `unless()` for conditional building
+  - `tap()` for side effects without modifying the builder
+  - `orderByAsc()` and `orderByDesc()` convenience methods
+  - `take()` and `skip()` aliases for `limit()` and `offset()`
+  - `union()` and `unionAll()` for combining queries
+  - `doesntExist()` as inverse of `exists()`
+  - `clone()` and `newQuery()` for query manipulation
+- Complete set of `or*` convenience methods for QueryBuilder:
+  - `orWhereLike()` - OR WHERE LIKE for cleaner search queries
+  - `orWhereBetween()` and `orWhereNotBetween()` - OR BETWEEN/NOT BETWEEN
+  - `orWhereIn()` and `orWhereNotIn()` - OR IN/NOT IN (with subquery support)
+  - `orWhereExists()` and `orWhereNotExists()` - OR EXISTS/NOT EXISTS
+  - `orWhereRaw()` - OR raw WHERE clause
+- **JoinClause** helper class for complex join conditions
+  - `on()`, `orOn()` for column comparisons
+  - `where()`, `orWhere()` for value conditions in joins
+  - `whereNull()`, `whereNotNull()` for NULL checks in joins
+- **Documentation**: Practical examples for all OR convenience methods in README, and a performance tip about using them for cleaner and more efficient SQL
+- **Comprehensive test coverage**
+  - 246 unit tests covering all features
+  - Integration tests for master/slave routing
+  - Trait tests for Timestamps and UUID
 
 ### Notes
 
 - Requires PHP 8.3 or 8.4
 - MySQL 8.0+ optimized
 - Zero ORM overhead - direct PDO execution
-
